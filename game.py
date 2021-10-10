@@ -2,8 +2,13 @@
 import pygame
 
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+
+screen = pygame.display.set_mode((675, 450))
+
+background = pygame.image.load('assets/background.png').convert()
 
 running = True
 while running:
-    screen.fill((0, 0, 0))
+    # Background
+    screen.blit(background, (0, 0))
+    pygame.display.update()
