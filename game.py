@@ -13,6 +13,10 @@ fpsClock = pygame.time.Clock()
 # Background
 background = load('assets/background.png')
 
+# game over
+overFont = pygame.font.Font('freesansbold.ttf', 64)
+gameOver = False
+
 # Player 1
 player1Img = load('assets/player1.png')
 player1Img = scale(player1Img, (30, 111))
@@ -68,8 +72,9 @@ def handle_hits():
     global player1hearts
     global player2hearts
     global needToReset
+    global gameOver
 
-    if player2x - player1x < 40:
+    if not gameOver and  player2x - player1x < 40:
         if not needToReset:
             if player1hitting and not player2hitting:
                 player2hearts -= 1
@@ -80,6 +85,14 @@ def handle_hits():
 
 running = True
 while running:
+    # Handle Events
+    for event in pygame.event.get():
+        # check if the event is the X button
+        if event.type==pygame.QUIT:
+            # if it is quit the game
+            pygame.quit()   
+            exit(0)
+
     # Background
     screen.blit(background, (0, 0))
 
@@ -120,14 +133,6 @@ while running:
     elif player2hearts == 1:
         screen.blit(heartImg, (620, 10))
 
-    # Handle Events
-    for event in pygame.event.get():
-        # check if the event is the X button
-        if event.type==pygame.QUIT:
-            # if it is quit the game
-            pygame.quit()   
-            exit(0)
-
     # Handle Keyboard input
     keys = pygame.key.get_pressed()
 
@@ -157,6 +162,11 @@ while running:
         needToReset = False
     
     handle_hits()
+
+    if player1hearts <= 0 or player2hearts <= 0:
+        over_text = overFont.render("GAME OVER", True, (255, 255, 255))
+        screen.blit(over_text, (140, 190))
+        gameOver = True
 
     pygame.display.update()
     fpsClock.tick(FPS)
