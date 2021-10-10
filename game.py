@@ -1,17 +1,24 @@
 #!/usr/bin/env python
-from os import makedev
 import pygame
+from pygame import mixer
 from pygame.image import load
 from pygame.transform import scale, rotate
 
 # Pygame Settings
 pygame.init()
+mixer.init()
+
 screen = pygame.display.set_mode((675, 450))
 FPS = 60 # frames per second setting
 fpsClock = pygame.time.Clock()
 
 # Background
 background = load('assets/background.png')
+music = mixer.music.load('assets/background-music.ogg')
+mixer.music.play(-1)
+
+# hit sound
+punchSound = mixer.Sound('assets/punch.wav')
 
 # game over
 overFont = pygame.font.Font('freesansbold.ttf', 64)
@@ -143,6 +150,8 @@ while running:
         move_player_1(-2)
 
     if keys[pygame.K_SPACE]:
+        if not player1hitting:
+            mixer.Sound.play(punchSound)
         player1hitting = True
     else:
         player1hitting = False
@@ -154,6 +163,8 @@ while running:
         move_player_2(-2)
 
     if keys[pygame.K_RETURN]:
+        if not player2hitting:
+            mixer.Sound.play(punchSound)
         player2hitting = True
     else:
         player2hitting = False
