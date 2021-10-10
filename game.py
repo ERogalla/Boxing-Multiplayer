@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from os import makedev
 import pygame
 from pygame.image import load
 from pygame.transform import scale, rotate
@@ -25,6 +26,7 @@ player1hitArm = scale(player1hitArm, (60, 21))
 
 player1x = 150
 player1hitting = False
+player1hearts = 3
 
 # Player 2
 player2Img = load('assets/player2.png')
@@ -39,7 +41,12 @@ player2hitArm = scale(player2hitArm, (60, 21))
 
 player2x = 400
 player2hitting = False
+player2hearts = 3
 
+# Heart
+heartImg = load('assets/heart.png')
+heartImg = scale(heartImg, (45, 39))
+needToReset = False
 
 def move_player_1(distance):
     global player1x
@@ -55,6 +62,21 @@ def move_player_2(distance):
     if new_position > 120 and new_position < 530 and new_position - 30 > player1x:
         player2x = new_position
 
+def handle_hits():
+    global player1hitting
+    global player2hitting
+    global player1hearts
+    global player2hearts
+    global needToReset
+
+    if player2x - player1x < 40:
+        if not needToReset:
+            if player1hitting and not player2hitting:
+                player2hearts -= 1
+                needToReset = True
+            if player2hitting and not player1hitting:
+                player1hearts -= 1
+                needToReset = True
 
 running = True
 while running:
@@ -75,6 +97,28 @@ while running:
         screen.blit(player2hitArm, (player2x - 35, 232))
     else:
         screen.blit(player2readyArm, (player2x - 20, 215))
+
+    # Player 1 hearts
+    if player1hearts == 3:
+        screen.blit(heartImg, (10, 10))
+        screen.blit(heartImg, (60, 10))
+        screen.blit(heartImg, (110, 10))
+    elif player1hearts == 2:
+        screen.blit(heartImg, (10, 10))
+        screen.blit(heartImg, (60, 10))
+    elif player1hearts == 1:
+        screen.blit(heartImg, (10, 10))
+    
+    # Player 2 hearts
+    if player2hearts == 3:
+        screen.blit(heartImg, (620, 10))
+        screen.blit(heartImg, (570, 10))
+        screen.blit(heartImg, (520, 10))
+    elif player2hearts == 2:
+        screen.blit(heartImg, (620, 10))
+        screen.blit(heartImg, (570, 10))
+    elif player2hearts == 1:
+        screen.blit(heartImg, (620, 10))
 
     # Handle Events
     for event in pygame.event.get():
@@ -108,8 +152,11 @@ while running:
         player2hitting = True
     else:
         player2hitting = False
-    
 
+    if not player1hitting and not player2hitting:
+        needToReset = False
+    
+    handle_hits()
 
     pygame.display.update()
     fpsClock.tick(FPS)
